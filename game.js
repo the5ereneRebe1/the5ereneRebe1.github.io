@@ -78,4 +78,5 @@ function checkGameStates(){
 }
 function restartGame(){
     init();
+    canvas.removeEventListener("click",restartGame,false);
 }
