@@ -5,6 +5,7 @@ const GAME_HEIGHT = 50;
 let turn;
 const cells = document.querySelectorAll('.cell');
 let selectedArray =[0,0,0,0,0,0,0,0,0];
+let isWinner = false;
 startGame();
 
 function startGame(){
@@ -24,6 +25,7 @@ function updateBanner(value){
     ctx.fillText(value,10,37);
 }
 function init(){
+isWinner = false;
 updateBanner("Welcome to Tic Tac Toe!");
 selectedArray =[0,0,0,0,0,0,0,0,0];
 for(var i = 0;i<cells.length;i++){
@@ -31,7 +33,35 @@ for(var i = 0;i<cells.length;i++){
     cells[i].innerText = '';
 }
 }
-
+function checkWinner(){
+    if(!isWinner){
+    let winningStates = [
+        [0,1,2],
+        [3,4,5],
+        [6,7,8],
+        [0,3,6],
+        [1,4,7],
+        [2,5,8],
+        [0,4,8],
+        [2,4,6]
+    ];
+    console.log(selectedArray);
+    let winner;
+    for(let i=0;i<winningStates.length;i++){
+        if(selectedArray[winningStates[i][0]]==selectedArray[winningStates[i][1]] &&
+            selectedArray[winningStates[i][1]]==selectedArray[winningStates[i][2]]){
+                if(selectedArray[winningStates[i][0]]==1)
+                    {winner=1;break;}
+                else if(selectedArray[winningStates[i][0]]==2)
+                    {winner=2;break;}
+        }
+    }
+    if(winner==1)
+        {restart("You Win! RESTART");isWinner=true;}
+    else if(winner == 2)
+        {restart("Computer Wins! RESTART");isWinner=true;}
+    }
+}
 
 
 //Question here: How is square getting passed?
@@ -39,16 +69,20 @@ function turnClick(square){
     let id = square.target.id;
     console.log(id);
     console.log(turn);
-    if(turn == 'human'){
+    console.log(isWinner);
+    
+    if((turn == 'human') && !isWinner){
         
         if(selectedArray[id]==0){
             cells[id].innerText = 'X';
             selectedArray[id] = 1;
             turn = 'computer';
+            checkWinner();
         }
 
     }
-    if(turn == 'computer'){
+
+    if((turn == 'computer') && !isWinner){
         console.log(turn);
         turn = 'human';
         
@@ -61,20 +95,29 @@ function turnClick(square){
                 break;
             }
         }
+        
     }
     checkGameStates();
 }
+
 function checkGameStates(){
+    checkWinner();
     let countZeroes = 0;
     for(let i=0;i<selectedArray.length;i++){
         if(selectedArray[i]==0) countZeroes++;
     }
     console.log(countZeroes);
-    if(countZeroes==0){
-        updateBanner("Restart");
-        canvas.addEventListener("click",restartGame,false);
+    if(countZeroes==0 && !isWinner){
+        restart("Tie RESTART");
     }
 
+}
+function restart(value){
+    console.log(value);
+    for(var i = 0;i<cells.length;i++)
+        cells[i].removeEventListener('click',turnClick,false);
+    updateBanner(value);
+        canvas.addEventListener("click",restartGame,false);
 }
 function restartGame(){
     init();
