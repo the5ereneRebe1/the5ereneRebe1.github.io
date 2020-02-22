@@ -3,6 +3,7 @@
 <head>
 <title>Tic Tac Toe</title>
 <link href="index.css" rel="stylesheet"/>
+
 </head>
 <body>
 
@@ -13,24 +14,25 @@ I hope you like it. </p>
 <br>
 <table>
   <tr>
-    <td></td>
-    <td class="vert"></td>
-    <td></td>
+    <td class="cell" id ="0"></td>
+    <td class="vert cell" id = "1"></td>
+    <td class="cell" id = "2"></td>
   </tr>
   <tr>
-    <td class="hori"></td>
-    <td class="vert hori"></td>
-    <td class="hori"></td>
+    <td class="hori cell" id = "3"></td>
+    <td class="vert hori cell" id = "4"></td>
+    <td class="hori cell" id="5"></td>
   </tr>
   <tr>
-    <td></td>
-    <td class="vert"></td>
-    <td></td>
+    <td class="cell" id="6"></td>
+    <td class="vert cell" id="7"></td>
+    <td class="cell" id="8"></td>
   </tr>
 </table>
 <br>
+<canvas id="gameScreen" width="800" height="50" style="align-self: center; border:2px solid #000000;></canvas>
 <hr>
 <p style="font-family:courier;"> &hearts; Made in HTML, CSS. </p>
-
+<script src="game.js" type="module"></script>
 </body>
 </html>

@@ -16,3 +16,7 @@ h1 {
     border-top: 2px solid black;
     border-bottom: 2px solid black;
   }
+  .cell {
+    text-align: center;
+    font-size: 40px;
+  }
