@@ -25,6 +25,7 @@ function updateBanner(value){
     ctx.fillText(value,10,37);
 }
 function init(){
+turn = "human";
 isWinner = false;
 updateBanner("Welcome to Tic Tac Toe!");
 selectedArray =[0,0,0,0,0,0,0,0,0];
