@@ -6,6 +6,16 @@ let turn;
 const cells = document.querySelectorAll('.cell');
 let selectedArray =[0,0,0,0,0,0,0,0,0];
 let isWinner = false;
+const winningStates = [
+    [0,1,2],
+    [3,4,5],
+    [6,7,8],
+    [0,3,6],
+    [1,4,7],
+    [2,5,8],
+    [0,4,8],
+    [2,4,6]
+];
 startGame();
 
 function startGame(){
@@ -25,27 +35,36 @@ function updateBanner(value){
     ctx.fillText(value,10,37);
 }
 function init(){
-turn = "human";
-isWinner = false;
-updateBanner("Welcome to Tic Tac Toe!");
-selectedArray =[0,0,0,0,0,0,0,0,0];
-for(var i = 0;i<cells.length;i++){
-    cells[i].addEventListener('click',turnClick,false);
-    cells[i].innerText = '';
+    turn = "human";
+    isWinner = false;
+    updateBanner("Welcome to Tic Tac Toe!");
+    selectedArray =[0,0,0,0,0,0,0,0,0];
+    for(var i = 0;i<cells.length;i++){
+        cells[i].addEventListener('click',turnClick,false);
+        cells[i].innerText = '';
+    }
 }
+function checkforWinning(player){
+    if(!isWinner){
+        for(let i=0;i<winningStates.length;i++){
+            let filled=0,empty=0,retVal=-1;
+            for(let j=0;j<3;j++){
+                if(selectedArray[winningStates[i][j]]==player)
+                    filled++;
+                if(selectedArray[winningStates[i][j]]==0){
+                    empty++;
+                    retVal = winningStates[i][j];
+                }
+            }
+            if(filled==2 && empty==1)
+                return retVal; 
+        }
+    }
+    return -1;
 }
 function checkWinner(){
+    
     if(!isWinner){
-    let winningStates = [
-        [0,1,2],
-        [3,4,5],
-        [6,7,8],
-        [0,3,6],
-        [1,4,7],
-        [2,5,8],
-        [0,4,8],
-        [2,4,6]
-    ];
     console.log(selectedArray);
     let winner;
     for(let i=0;i<winningStates.length;i++){
@@ -86,17 +105,29 @@ function turnClick(square){
     if((turn == 'computer') && !isWinner){
         console.log(turn);
         turn = 'human';
-        
-        for(var i=0;i<selectedArray.length;i++){
-            if(selectedArray[i]==0){
-                console.log("Computer plays:"+i);
-                updateBanner("Computer plays at cell "+i+".");
-                selectedArray[i] = 2;
-                cells[i].innerText = 'O';
-                break;
+        let i1 = checkforWinning(2);
+        console.log("Checking if computer is winning: "+i1);
+        let i2 = checkforWinning(1);
+        console.log("Checking if human is winning: "+i2);
+        if(i1!=-1 || i2!=-1){
+            i1 = i1!=-1?i1:i2;
+            console.log("Computer plays:"+i1);
+            updateBanner("Computer plays at cell "+i1+".");
+            selectedArray[i1] = 2;
+            cells[i1].innerText = 'O';
+        }
+        else
+        {
+            for(var i=0;i<selectedArray.length;i++){
+                if(selectedArray[i]==0){
+                    console.log("Computer plays:"+i);
+                    updateBanner("Computer plays at cell "+i+".");
+                    selectedArray[i] = 2;
+                    cells[i].innerText = 'O';
+                    break;
+                }
             }
         }
-        
     }
     checkGameStates();
 }
