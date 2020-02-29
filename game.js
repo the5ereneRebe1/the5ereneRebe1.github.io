@@ -5,6 +5,7 @@ const GAME_HEIGHT = 50;
 let turn;
 const cells = document.querySelectorAll('.cell');
 let selectedArray =[0,0,0,0,0,0,0,0,0];
+let positionWins = [0,0,0,0,0,0,0,0,0];
 let isWinner = false;
 const winningStates = [
     [0,1,2],
@@ -44,6 +45,51 @@ function init(){
         cells[i].innerText = '';
     }
 }
+function backtrack(currentState,turn,flag){
+    let totalWins = 0;
+    //base case
+    
+    if(checkIfPlayerWon(2))
+            return 1;
+    else if(checkIfPlayerWon(1)) 
+            return 0;
+    let isEmpty = false;
+    for(let i=0;i<currentState.length;i++)
+        if(currentState[i]==0)
+            isEmpty = true;
+    if(!isEmpty)
+        return 0;
+
+
+    //Pruning logic , if there is a win condition play that win condition
+    for(let i=0;i<currentState.length;i++){
+        
+        if(currentState[i]==0){
+            if(turn==1){
+                currentState[i] = 1;
+                totalWins += backtrack(currentState, 2,false);
+                currentState[i] = 0;
+            }else{
+                currentState[i] = 2;
+                let wins =  backtrack(currentState, 1,false);
+                if(flag) {
+                    console.log(wins);
+                    positionWins[i] = wins;
+                    console.log(positionWins);
+                }
+
+                totalWins += wins;
+                currentState[i] = 0;
+            }
+            //recur
+            //totalWins +=backtrack(currentState, turn);
+
+        }
+
+    }
+    return totalWins;
+}
+
 function checkforWinning(player){
     if(!isWinner){
         for(let i=0;i<winningStates.length;i++){
@@ -62,20 +108,25 @@ function checkforWinning(player){
     }
     return -1;
 }
+function checkIfPlayerWon(player) {
+    for(let i=0;i<winningStates.length;i++){
+        if(selectedArray[winningStates[i][0]]==selectedArray[winningStates[i][1]] &&
+            selectedArray[winningStates[i][1]]==selectedArray[winningStates[i][2]])
+            {
+                if(selectedArray[winningStates[i][0]]==player)
+                    return true;
+            }
+    }
+    return false;
+}
 function checkWinner(){
     
     if(!isWinner){
     console.log(selectedArray);
     let winner;
-    for(let i=0;i<winningStates.length;i++){
-        if(selectedArray[winningStates[i][0]]==selectedArray[winningStates[i][1]] &&
-            selectedArray[winningStates[i][1]]==selectedArray[winningStates[i][2]]){
-                if(selectedArray[winningStates[i][0]]==1)
-                    {winner=1;break;}
-                else if(selectedArray[winningStates[i][0]]==2)
-                    {winner=2;break;}
-        }
-    }
+    for(let i=1;i<3;i++)
+        if(checkIfPlayerWon(i))
+            winner=i;
     if(winner==1)
         {restart("You Win! RESTART");isWinner=true;}
     else if(winner == 2)
@@ -101,10 +152,11 @@ function turnClick(square){
         }
 
     }
-
+    //TODO: Make it cleaner and more readable
     if((turn == 'computer') && !isWinner){
         console.log(turn);
         turn = 'human';
+       
         let i1 = checkforWinning(2);
         console.log("Checking if computer is winning: "+i1);
         let i2 = checkforWinning(1);
@@ -118,15 +170,33 @@ function turnClick(square){
         }
         else
         {
-            for(var i=0;i<selectedArray.length;i++){
-                if(selectedArray[i]==0){
-                    console.log("Computer plays:"+i);
-                    updateBanner("Computer plays at cell "+i+".");
-                    selectedArray[i] = 2;
-                    cells[i].innerText = 'O';
-                    break;
+            positionWins = [0,0,0,0,0,0,0,0,0];
+            backtrack(selectedArray,2,true);
+            console.log(positionWins);
+            let pos = -1,max = -1;
+            for(let i=0;i<positionWins.length;i++)
+                if(positionWins[i]>max){
+                    max = positionWins[i];
+                    pos = i;
                 }
+            if(max==0 && pos ==0){
+                pos=-1;
+                for(let i = 0;i<9;i++)
+                    if(selectedArray[i]==0)
+                        pos = i;
+                if(pos!=-1){
+                    console.log("Computer plays:"+pos);
+                    updateBanner("Computer plays at cell "+pos+".");
+                    selectedArray[pos] = 2;
+                    cells[pos].innerText = 'O';
+                }
+            } else {
+                console.log("Computer plays:"+pos);
+            updateBanner("Computer plays at cell "+pos+".");
+            selectedArray[pos] = 2;
+            cells[pos].innerText = 'O';
             }
+        
         }
     }
     checkGameStates();
